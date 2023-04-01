@@ -2,6 +2,7 @@ import sys
 import json
 import argparse
 import logging
+import os
 
 from .local import RobotClient, find_robots
 from .credentialstore import CredentialStore, CREDENTIAL_STORE_PATH
@@ -65,6 +66,7 @@ cmds_cloud_cleanzone.add_argument("--zoneid", type=str, help='Persisten Zone id.
 
 cmds_cloud_history = cmds_cloud.add_parser('history', help='List history (experimental).')
 cmds_cloud_history.add_argument("-r", "--robotid", type=str, help='ID of robot.', required=True)
+cmds_cloud_history.add_argument("-m", "--mapsession", type=int, help='Map a specific session.', required=False)
 
 cmds_cloud_mode = cmds_cloud.add_parser('mode', help='Set a robots powermode.')
 cmds_cloud_mode.add_argument("-r", "--robotid", type=str, help='ID of robot.', required=True)
@@ -195,30 +197,39 @@ if args.command == "cloud":
             OUTPUT = rc.stopclean()
         
         if args.subcommand == "history":
-            OUTPUT = []
-            
-            i = 0
-            
-            if args.apiversion == 3:
-                cleaning_sessions = rc.getCleaningSessions().values()
+            if args.mapsession:
+                session = rc.getCleaningSessions()[args.mapsession]
+                map = rc.getMaps()[session.mapid]
+                
+                
+                with open(os.path.expanduser('~/tmp/session_'+str(session.sessionid)+'_map.png'),'xb') as fp:
+                    fp.write(map.getImage(session.mapsn))
+                
             else:
-                cleaning_sessions = rc.getCleaningSessions()
-            
-            for sess in map(lambda x: {"sessionid": x.sessionid, "endtime": x.endtime.isoformat(), "duration": x.duration, "cleandearea": x.cleandearea, "imageurl": x.imageurl, "endstatus": x.endstatus, "mapid": x.mapid, "mapsn": x.mapsn}, cleaning_sessions):
+                OUTPUT = []
                 
-                if args.output == "table":
-                    from .imageascii import draw2shade
-                    
-                    try:
-                        if i < 10:
-                            sess["imageurl"] = draw2shade(sess["imageurl"]) + "_"
-                            i += 1
-                        else:
-                            sess["imageurl"] = "(not shown)"
-                    except:
-                        pass
+                i = 0
                 
-                OUTPUT.append(sess)
+                if args.apiversion == 3:
+                    cleaning_sessions = rc.getCleaningSessions().values()
+                else:
+                    cleaning_sessions = rc.getCleaningSessions()
+                
+                for sess in map(lambda x: {"sessionid": x.sessionid, "endtime": x.endtime.isoformat(), "duration": x.duration, "cleandearea": x.cleandearea, "imageurl": x.imageurl, "endstatus": x.endstatus, "mapid": x.mapid, "mapsn": x.mapsn}, cleaning_sessions):
+                        
+                        if args.output == "table":
+                            from .imageascii import draw2shade
+                            
+                            try:
+                                if i < 10:
+                                    sess["imageurl"] = draw2shade(sess["imageurl"]) + "_"
+                                    i += 1
+                                else:
+                                    sess["imageurl"] = "(not shown)"
+                            except:
+                                pass
+                        
+                        OUTPUT.append(sess)
         
         if args.subcommand == "maps":
             OUTPUT = []
