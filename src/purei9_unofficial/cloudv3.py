@@ -162,7 +162,9 @@ class CloudRobot(AbstractRobot, CachedData):
         return list(map(lambda item: CleaningSession(
                 endtime=datetime.datetime.strptime(item["timeStamp"].split(".")[0], "%Y-%m-%dT%H:%M:%S"), 
                 duration=item["cleaningSession"]["cleaningDuration"] / 10000000.0 if "cleaningSession" in item else None, 
-                cleandearea=item["cleanedArea"], 
+                cleandearea=item["cleanedArea"],
+                mapid=item["cleaninSession"]["persistentMapId"],
+                mapsn=item["cleaninSession"]["persistentMapSN"],
                 #endstatus=item["cleaningSession"]["completion"]
             ), r.json()))
         

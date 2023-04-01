@@ -61,7 +61,7 @@ class DustbinStates(Enum):
 
 class CleaningSession:
     
-    def __init__(self, endtime, duration, cleandearea, endstatus=None, imageurl=None, mapid=None, error=None):
+    def __init__(self, endtime, duration, cleandearea, endstatus=None, imageurl=None, mapid=None, mapsn=None, error=None):
         
         self.endtime     = endtime      # datetime
         self.duration    = duration     # duration in seconds
@@ -70,6 +70,7 @@ class CleaningSession:
         self.endstatus   = endstatus    # end status (Needs an enum)
         self.imageurl    = imageurl     # url of image if available
         self.mapid       = mapid        # map id
+        self.mapsn       = mapsn        # map sequence number
         self.error       = error        # String(?)
 
 class AbstractRobot:
