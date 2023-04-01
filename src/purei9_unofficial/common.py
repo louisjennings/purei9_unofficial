@@ -61,8 +61,9 @@ class DustbinStates(Enum):
 
 class CleaningSession:
     
-    def __init__(self, endtime, duration, cleandearea, endstatus=None, imageurl=None, mapid=None, mapsn=None, error=None):
+    def __init__(self, sessionid, endtime, duration, cleandearea, endstatus=None, imageurl=None, mapid=None, mapsn=None, error=None):
         
+        self.sessionid   = sessionid    # session id
         self.endtime     = endtime      # datetime
         self.duration    = duration     # duration in seconds
         self.cleandearea = cleandearea  # area in m2
