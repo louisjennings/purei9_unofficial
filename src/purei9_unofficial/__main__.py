@@ -198,7 +198,13 @@ if args.command == "cloud":
             OUTPUT = []
             
             i = 0
-            for sess in map(lambda x: {"sessionid": x.sessionid, "endtime": x.endtime.isoformat(), "duration": x.duration, "cleandearea": x.cleandearea, "imageurl": x.imageurl, "endstatus": x.endstatus, "mapid": x.mapid, "mapsn": x.mapsn}, rc.getCleaningSessions()):
+            
+            if args.apiversion == 3:
+                cleaning_sessions = rc.getCleaningSessions().values()
+            else:
+                cleaning_sessions = rc.getCleaningSessions()
+            
+            for sess in map(lambda x: {"sessionid": x.sessionid, "endtime": x.endtime.isoformat(), "duration": x.duration, "cleandearea": x.cleandearea, "imageurl": x.imageurl, "endstatus": x.endstatus, "mapid": x.mapid, "mapsn": x.mapsn}, cleaning_sessions):
                 
                 if args.output == "table":
                     from .imageascii import draw2shade
