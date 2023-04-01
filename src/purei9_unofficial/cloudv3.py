@@ -146,7 +146,11 @@ class CloudRobot(AbstractRobot, CachedData):
         
         r = do_http("GET", self.cloudclient.pureapiurl + "/appliances/" + self.id + "/interactive-maps", headers=self.cloudclient._getHeaders())
         
-        return list(map(lambda x: CloudMap(self, x), r.json()))
+        map_list =  list(map(lambda x: CloudMap(self, x), r.json()))
+        
+        map_dict = dict(map(lambda x: (x.id, x),map_list))
+        
+        return map_dict
     
     def cleanZones(self, mapId, zoneIds, powerModes=None):
         
