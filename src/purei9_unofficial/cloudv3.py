@@ -159,7 +159,7 @@ class CloudRobot(AbstractRobot, CachedData):
         
         r = do_http("GET", self.cloudclient.pureapiurl + "/appliances/" + self.id + "/history", headers=self.cloudclient._getHeaders())
         
-        return list(map(lambda item: CleaningSession(
+        session_list =  list(map(lambda item: CleaningSession(
                 sessionid=item["sessionId"],
                 endtime=datetime.datetime.strptime(item["timeStamp"].split(".")[0], "%Y-%m-%dT%H:%M:%S"), 
                 duration=item["cleaningSession"]["cleaningDuration"] / 10000000.0 if "cleaningSession" in item else None, 
@@ -168,6 +168,10 @@ class CloudRobot(AbstractRobot, CachedData):
                 mapsn=item["cleaningSession"]["persistentMapSN"] if "cleaningSession" in item else None,
                 #endstatus=item["cleaningSession"]["completion"]
             ), r.json()))
+        
+        session_dict = dict(map(lambda x: (x.sessionid, x), session_list))
+        
+        return session_dict
         
     ###
     

@@ -49,7 +49,7 @@ class TestCloud(unittest.TestCase):
         # Sessions
         ###
         
-        for session in rc.getCleaningSessions():
+        for _,session in rc.getCleaningSessions().items():
             assert type(session.endtime) == datetime.datetime
         
         ###
