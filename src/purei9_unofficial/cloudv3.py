@@ -146,7 +146,11 @@ class CloudRobot(AbstractRobot, CachedData):
         
         r = do_http("GET", self.cloudclient.pureapiurl + "/appliances/" + self.id + "/interactive-maps", headers=self.cloudclient._getHeaders())
         
-        return list(map(lambda x: CloudMap(self, x), r.json()))
+        map_list =  list(map(lambda x: CloudMap(self, x), r.json()))
+        
+        map_dict = dict(map(lambda x: (x.id, x),map_list))
+        
+        return map_dict
     
     def cleanZones(self, mapId, zoneIds, powerModes=None):
         
@@ -286,8 +290,13 @@ class CloudMap:
         
         # self._get()
         
-    def getImage(self):       
-        r = do_http("GET", self.cloudclient.pureapiurl + "/appliances/" + self.robot.id + "/interactive-maps/" + self.id + "/sequences/" + str(self.sequenceNumber) + "/maps", headers=self.cloudclient._getHeaders(), params={"mapFormat": "rawgzip"})
+    def getImage(self, sequence_number=None):
+        # Draw the saved map by default. If a specfic squence number is passed
+        # in, draw the map corresponding to that sequence number.
+        if sequence_number == None:
+            sequence_number = self.sequenceNumber
+                   
+        r = do_http("GET", self.cloudclient.pureapiurl + "/appliances/" + self.robot.id + "/interactive-maps/" + self.id + "/sequences/" + str(sequence_number) + "/maps", headers=self.cloudclient._getHeaders(), params={"mapFormat": "rawgzip"})
         return plot_map(r.content)
     
 class CloudZone:

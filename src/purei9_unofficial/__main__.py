@@ -216,24 +216,31 @@ if args.command == "cloud":
         
         if args.subcommand == "maps":
             OUTPUT = []
-        
-            for m in rc.getMaps():
-                
-                js = m.getImage()
-                image = None
-                if js:
-                    if args.output == "table":
-                        from .imageascii import image_json_2_ascii
-                        image = image_json_2_ascii(js)
-                    else:
-                        image = js["PngImage"]
-                
-                OUTPUT.append({
-                    "image": image,
-                    "id": m.id,
-                    "name": m.name, 
-                    "zones": list(map(lambda zone: zone.name, m.zones)), 
-                })
+            if args.apiversion == 3:
+                for _,m in rc.getMaps().items():
+                    OUTPUT.append({
+                        "image": None,
+                        "id": m.id,
+                        "name": m.name, 
+                        "zones": list(map(lambda zone: zone.name, m.zones)), 
+                    })
+            else:
+                for m in rc.getMaps():
+                    js = m.getImage()
+                    image = None
+                    if js:
+                        if args.output == "table":
+                            from .imageascii import image_json_2_ascii
+                            image = image_json_2_ascii(js)
+                        else:
+                            image = js["PngImage"]
+                    
+                    OUTPUT.append({
+                        "image": image,
+                        "id": m.id,
+                        "name": m.name, 
+                        "zones": list(map(lambda zone: zone.name, m.zones)), 
+                    })
         
         if args.subcommand == "cleanzone":
             rc.cleanZones(args.mapid, [args.zoneid])
