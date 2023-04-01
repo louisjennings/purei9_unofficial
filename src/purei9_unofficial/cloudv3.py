@@ -283,8 +283,13 @@ class CloudMap:
         
         # self._get()
         
-    def getImage(self):       
-        r = do_http("GET", self.cloudclient.pureapiurl + "/appliances/" + self.robot.id + "/interactive-maps/" + self.id + "/sequences/" + str(self.sequenceNumber) + "/maps", headers=self.cloudclient._getHeaders(), params={"mapFormat": "rawgzip"})
+    def getImage(self, sequence_number=None):
+        # Draw the saved map by default. If a specfic squence number is passed
+        # in, draw the map corresponding to that sequence number.
+        if sequence_number == None:
+            sequence_number = self.sequenceNumber
+                   
+        r = do_http("GET", self.cloudclient.pureapiurl + "/appliances/" + self.robot.id + "/interactive-maps/" + self.id + "/sequences/" + str(sequence_number) + "/maps", headers=self.cloudclient._getHeaders(), params={"mapFormat": "rawgzip"})
         return plot_map(r.content)
     
 class CloudZone:
